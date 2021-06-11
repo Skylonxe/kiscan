@@ -1,0 +1,54 @@
+`define DefaultTexture Texture2D'KIS_Resources.Texture.DefaultTexture'
+`define DefaultMaterial Material'KIS_Resources.Material.DefaultMaterial'
+`define DefaultFont Font'KIS_Resources.Font.DefaultFont'
+`define DefaultText "Hello World!"
+`define CircleTexture Texture2D'KIS_Resources.Texture.WhiteCircle'
+`define DefaultDebugFont Font'KIS_Resources.Font.DefaultDebugFont'
+
+`define KiscanWarn(Msg) HUD.WorldInfo.Game.Broadcast(HUD.PlayerOwner, "Kiscan Warning:"@`Msg);`log("Kiscan Warning:"@`Msg)
+
+`define KiscanVersion 1.0
+
+/**
+ * Defines parent project. Available values:
+ * 
+ * - KISParentProject_GameInfo
+ * - KISParentProject_UTGame_ClassicHUD
+ * - KISParentProject_UTGame_ScaleformHUD
+ * - KISParentProject_UDKGame
+ */
+`define KISParentProject_GameInfo
+
+`if(`isdefined(KISParentProject_GameInfo))
+	`define KiscanGameInfoClass GameInfo
+	`define KiscanPlayerControllerClass PlayerController
+	`define KiscanHUDClass UDKHUD
+	`define KiscanPlayerInputClass PlayerInput
+`else
+	`if(`isdefined(KISParentProject_UTGame_ClassicHUD))
+		`define KiscanGameInfoClass UTGame
+		`define KiscanPlayerControllerClass UTPlayerController
+		`define KiscanHUDClass UTHUD
+		`define KiscanPlayerInputClass UTPlayerInput
+	`else
+		`if(`isdefined(KISParentProject_UTGame_ScaleformHUD))
+			`define KiscanGameInfoClass UTGame
+			`define KiscanPlayerControllerClass UTPlayerController
+			`define KiscanHUDClass UTGfxHudWrapper
+			`define KiscanPlayerInputClass UTPlayerInput
+		`else
+			`if(`isdefined(KISParentProject_UDKGame))
+				`define KiscanGameInfoClass UDKGame
+				`define KiscanPlayerControllerClass UDKPlayerController
+				`define KiscanHUDClass UDKHUD
+				`define KiscanPlayerInputClass UDKPlayerInput
+			`else
+				// Default case:
+				`define KiscanGameInfoClass GameInfo
+				`define KiscanPlayerControllerClass PlayerController
+				`define KiscanHUDClass UDKHUD
+				`define KiscanPlayerInputClass PlayerInput
+			`endif 
+		`endif 
+	`endif 
+`endif 
