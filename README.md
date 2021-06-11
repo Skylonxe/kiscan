@@ -395,3 +395,67 @@ Right Image - Scene which contains cursor - Priority=10
 Right Image - Scene which contains image - Priority=5
 
 ![priority](https://github.com/Skylonxe/kiscan/blob/main/Resources/priority.png)
+
+## Settings
+2021 note: following sections are undocumented.
+### KISSettings
+
+![kissettings_properties](https://github.com/Skylonxe/kiscan/blob/main/Resources/kissettings_properties.png)
+
+##### Debug
+###### Draw Debug Cursor
+###### Debug Cursor Color
+##### Screen
+###### Native Resolution
+##### Console
+###### Overwrite Console Binding
+###### Console Key
+###### Small Console Key
+
+## Scene
+### Overview
+Scenes can be presented like invisible layers, similar to layers in Adobe Photoshop.
+
+![kiscan_hierarchy_2_scene](https://github.com/Skylonxe/kiscan/blob/main/Resources/kiscan_hierarchy_2_scene.png)
+
+Their structure is very easy to understand. They are composed from Components and Subscenes.
+
+Subscenes are common scenes but they are linked with their parent scenes. This means that changes in scenes can affect subscenes. For example, when you move scene, subscenes will move too. Subscenes are always rendered on top of parent scenes. It means that you can not use some subscene as background for parent scene.
+
+### KISScene
+
+![kisscene_properties](https://github.com/Skylonxe/kiscan/blob/main/Resources/kisscene_properties.png)
+
+#### Basic Appearance
+##### Position
+
+###### Dynamic Property
+- Corresponding debug property: Draw Position
+- Corresponding kismet sequences: Set Property, Get Property
+###### Output Property
+- Corresponding debug property: Draw Output Position
+- Corresponding kismet sequences: Get Output Property
+
+`Output Position` can be overriden by Attach To Cursor and Attach To Cursor Offset.
+
+![sceneoutpos](https://github.com/Skylonxe/kiscan/blob/main/Resources/sceneoutpos.png)
+
+#### Cursor
+##### Attach To Cursor
+##### Attach To Cursor Offset
+#### Debug
+##### Draw Position
+##### Draw Output Position
+##### Draw Attach To Cursor Offset
+##### Draw Priority
+##### Draw Tag
+##### Debug Color
+#### Rendering
+##### Enabled
+##### Priority
+##### Draw Mode
+##### Draw Show All Margin
+##### Show All Margin Color
+#### Scene
+##### Sub Scene Archetype
+##### Component Archetype
