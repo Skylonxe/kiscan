@@ -1,6 +1,10 @@
 # About (2021)
-Kiscan is GUI Framework for Unreal Development Kit (Unreal Engine 3). I released it in March 2014 and since then it was self hosted on my domain. I moved it to GitHub in 2021 to find more persistent place for it. Framework architecture and the way UI authoring works can be compared to UMG of UE4, although there were significant limitations as there was no C++ access or editor customization in UDK.
-As this framework was created quite some time ago, it does not represent my present code quality. All the folowing sections are mostly copied from my self hosted page. Documentation is not complete because at the time of the release of Kiscan, Unreal Engine 4 came out and I migrated shortly too. 
+Kiscan is node based visual scripting powered GUI Framework for Unreal Development Kit (Unreal Engine 3). I released it in March 2014 and since then it was self hosted on my domain. I moved it to GitHub in 2021 to find more persistent place for it. Framework architecture and the way UI authoring works can be compared to UMG of UE4, although there were significant limitations as there was no C++ access or editor customization in UDK.
+As this framework and docs were created quite some time ago, it does not represent my present code quality. All the folowing sections are mostly copied from my self hosted page. Documentation is not complete because at the time of the release of Kiscan, Unreal Engine 4 came out and I migrated shortly too.
+
+![Logo1_small1](https://github.com/Skylonxe/kiscan/blob/main/Resources/Logo1_small1.png)
+
+![header1](https://github.com/Skylonxe/kiscan/blob/main/Resources/header1.png)
 
 ### Main pillars
 - Utilize Full Power of Kismet: All dynamic actions and events are managed in Kismet. You don't need to touch single line of code.
@@ -459,3 +463,129 @@ Subscenes are common scenes but they are linked with their parent scenes. This m
 #### Scene
 ##### Sub Scene Archetype
 ##### Component Archetype
+
+## Component
+Components represent containers that can process input and do something interactive or dynamic by itself. They do not contain any graphics and can not render it by itself.
+
+Most important properties are Canvas Object Lists (called COList) and Single Canvas Objects (called COSpecial). These are outputs from components where graphics can be connected. Simple static component (KISComponent) has only one COList - COList_Static. This is list of canvas objects that are always rendered. Good example of COLists is button. Button has four COLists: Idle, Hover, Clicked, Static.
+
+- Idle - canvas objects rendered when you do nothing with button.
+- Hover - canvas objects rendered when you are hovering on button by mouse cursor.
+- Clicked - canvas objects rendered when button is clicked/pressed.
+- Static - always rendered canvas objects.
+
+This means that you can use different graphics for different states/situations of components. Some components does not allow use of multiple canvas objects because they can work only with one. That is why they do not use COLists but COSpecials. Good example is KISComponent_TextInput which is simple one line text field. Can you imagine that one text field will work with ten texts and fonts ? Of course, you can not. That is why we can use only one canvas object there.
+
+### Overview
+### KISComponent
+
+![kiscomponent_properties](https://github.com/Skylonxe/kiscan/blob/main/Resources/kiscomponent_properties.png)
+
+#### Basic Appearance
+##### Position
+#### Cursor
+##### Attach To Cursor
+##### Attach To Cursor Offset
+#### Debug
+##### Draw Position
+##### Draw Output Position
+##### Draw Attach To Cursor Offset
+##### Draw Priority
+##### Draw Tag
+##### Draw Mouse Hover
+##### Debug Color
+#### Kismet
+##### Trigger Kismet Event Mouse Hover
+##### Trigger Kismet Event Mouse Input
+#### Lists of Canvas Objects
+##### CO List - Static
+#### Rendering
+##### Enabled
+##### Priority
+
+### KISComponent_Button
+![kiscomponent_button_properties](https://github.com/Skylonxe/kiscan/blob/main/Resources/kiscomponent_button_properties.png)
+
+![buttonactivatedseq](https://github.com/Skylonxe/kiscan/blob/main/Resources/buttonactivatedseq.png)
+
+#### Button
+##### Draw Idle Under Hover
+##### Draw Idle Under Clicked
+##### Draw Hover Under Clicked
+#### Button Input
+##### Activate By Mouse Input
+##### Mouse Button
+##### Key Bind
+##### Use Press Instead Release
+#### Debug
+##### Draw Mouse Hover
+#### Lists of Canvas Objects
+##### CO List - Idle
+##### CO List - Hover
+##### CO List - Clicked
+
+### KISComponent_Button_Checkbox
+
+![kiscomponent_button_checkbox_properties](https://github.com/Skylonxe/kiscan/blob/main/Resources/kiscomponent_button_checkbox_properties.png)
+
+#### Checkbox
+##### Draw Checked Idle Under Hover
+##### Draw Checked Idle Under Clicked
+##### Draw Checked Hover Under Clicked
+#### Lists of Canvas Objects
+##### CO List - Checked Idle
+##### CO List - Checked Hover
+##### CO List - Checked Clicked
+
+### KISComponent_Button_Radio
+
+![kiscomponent_button_radio_properties](https://github.com/Skylonxe/kiscan/blob/main/Resources/kiscomponent_button_radio_properties.png)
+
+#### Lists of Canvas Objects
+##### CO List - Active Idle
+
+### KISComponent_Button_TextInput
+
+![kiscomponent_button_textinput_properties](https://github.com/Skylonxe/kiscan/blob/main/Resources/kiscomponent_button_textinput_properties.png)
+
+#### Debug
+##### Draw Scroll Window
+#### Lists Of Canvas Objects
+##### CO Special - Idle Text
+##### CO Special - Hover Text
+##### CO Special - Clicked Text
+##### CO Special - Caret
+#### Text Input
+##### Text
+##### Caret Blink Speed
+##### Scroll
+##### Scroll Window Size
+
+## Canvas Objects
+### Image
+### Scripted Text
+### Simple Text
+
+## Sequence Actions
+### Scene
+#### Create New
+#### Destroy
+#### Get Output Property
+#### Set Property
+#### Get Property
+### Component
+#### Get Output Property
+
+## Sequence Events
+## Sequence Conditions
+## Networking
+## Mobile
+## Examples
+Simple menu with four buttons and logo. Play button opens some level, Website button opens browser, Options opens scene with resolution selection and exit shows up animated dialog Yes/No. There is also animated background camera and 2D overlay on one actor.
+
+![burnedgrunge](https://github.com/Skylonxe/kiscan/blob/main/Resources/burnedgrunge.jpg)
+
+Available for download in BurnedGrungeExample folder. 
+
+
+
