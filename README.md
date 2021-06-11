@@ -1,6 +1,6 @@
 # About (2021)
 Kiscan is node based visual scripting powered GUI Framework for Unreal Development Kit (Unreal Engine 3). I released it in March 2014 and since then it was self hosted on my domain. I moved it to GitHub in 2021 to find more persistent place for it. Framework architecture and the way UI authoring works can be compared to UMG of UE4, although there were significant limitations as there was no C++ access or editor customization in UDK.
-As this framework and docs were created quite some time ago, it does not represent my present code quality. All the folowing sections are mostly copied from my self hosted page. Documentation is not complete because at the time of the release of Kiscan, Unreal Engine 4 came out and I migrated shortly too.
+As this framework and docs were created quite some time ago, it does not represent my present code quality. All the folowing sections are mostly copied from my self hosted page. Documentation is not complete because at the time of the release of Kiscan, Unreal Engine 4 came out and I migrated shortly too. Framework code is extensively commented, so it might serve as additional documentation.
 
 ![Logo1_small1](https://github.com/Skylonxe/kiscan/blob/main/Resources/Logo1_small1.png)
 
