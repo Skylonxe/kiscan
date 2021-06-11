@@ -159,3 +159,239 @@ We are done ! When you press button it will print your log to screen.
 ### Conclusion
 You should now understand how GUI creation in kiscan looks. Feel free to experiment with all available properties because experimentíng is best way how to learn something. Almost all properties have tooltips available!
 
+## Fundamentals
+
+### Overview
+In previous part you created simple gui, however we talked about features only slightly. In this part, we will talk more about framework and how it everything works together. We will cover all important parts of framework.
+
+We usually build basic looks of our GUI using Content Browser and Archetypes. Archetypes are templates of some objects. We create archetypes using Actor Classes and then link them each other. Every archetype has some name but that name does not matter. What matters is Tag of our archetype.
+
+Tags have to be unique for every object. Tags are usually specified in properties and represent name of real object which will be created on beginning of game from our archetype. Tags are especially very important in kismet. Let's say that you want to create variable in kismet which refers to some image. You can not use name of archetype because you can have unlimited count of objects based on same archetype but what is unique for every object is its Tag. That is why we use Tag to get reference to some specific object.
+
+When we have our archetypes ready we can then link them to rendering process using kismet. We use kismet for dynamic and runtime events and actions only. Main rule of kiscan is that everything you can create and set up in editor you can also do during gameplay using kismet, so most of custom kismet nodes are simple SetProperty and GetProperty actions.
+
+### Concept
+![kiscan_hierarchy_2](https://github.com/Skylonxe/kiscan/blob/main/Resources/kiscan_hierarchy_2.png)
+There are four types of objects that you can work with:
+
+- Settings
+- Scenes
+- Components
+- Canvas Objects
+
+#### Settings
+Provides default settings for framework during initilization. These are relevant only during development and you can not access them during gameplay.
+
+See Settings page for more informations.
+
+#### Scenes
+Represent transparent layer where you can place components or subscenes. Subscenes are same objects as common scenes, however they are affected by their parent scenes (they move together and so on).
+
+See Scene page for more informations.
+
+#### Components
+Components are containers for graphics (Canvas Objects). They do not contain graphics because graphics is just linked to them by developer. They can process input and dynamically update various graphics based on situation. E.g. button, radio button, checkbox, text field.
+
+See Component page for more informations.
+
+#### Canvas Objects
+Manage only visual part (rendering) and can not process input because input is processed by their parent - component. They are directly linked to assets like textures, fonts, materials.
+
+See Canvas Object page for more informations.
+
+### Properties types
+#### Static
+Regular properties like color and so on. These do not need additional logic and can be used internally by framework in same form as they are stored in property.
+
+Static properties are accessible in kismet using actions XY_SetProperty, XY_GetProperty.
+
+#### Dynamic/Output
+Many properties requires to be dynamically updated by framework during gameplay. Good example is position. We can not simply implement logic like ImagePosition.X = Position.X because it will work good with default resolution, however it will not update when you change your resolution and want to have image on same place.
+
+That is why we decided to break these properties into two:
+
+- Dynamic
+- Output
+
+Dynamic properties represent input values specified by developer.
+
+Output properties represent output values that is used by framework, internally calculated from Dynamic ones based on current resolution and aspect ratio (You can see these calculations here: Draw Mode).
+
+Note: For easier reading we do not prefix properties with “Dynamic” in editor. Output properties always contain prefix “Output”.
+
+Dynamic properties are accessible in kismet using actions XY_SetProperty, XY_GetProperty.
+
+Output properties are accessible in kismet using actions XY_GetOutputProperty.
+
+### Position
+Usually we discuss properties of objects at separate pages but Position is often used and a bit more complicated than simple one line properties, so we will explain it here.
+
+Position is Dynamic/Output property composed from three different types of specifying of position.
+
+- Dynamic
+- Relative
+- Offset
+
+#### Dynamic
+Result is calculated by Draw Mode. Most usual position type. Usually it means that `1 Dynamic Unit = 1 Pixel` when your resolution same as Native Resolution.
+
+#### Relative
+1.0 Relative Unit = Full size of region allowed by Draw Mode.
+
+0.5 Relative Unit = Half size of region allowed by Draw Mode.
+
+
+Usually = 0.5 middle of screen.
+
+#### Offset
+1 Offset Unit = 1 Pixel (always).
+
+When these three position types are calculated, they are summed into one property Output Position. It represents final position of object in pixels.
+
+### Size
+All sizes in Kiscan work like Dynamic position type.
+
+1 Size Unit = 1 Pixel only when you use same resolution as Native Resolution. Otherwise, result is calculated by Draw Mode.
+
+### Draw Mode
+Draw Mode allows you to specify how the scene and subscenes should be scaled/fit to the screen as resolution changes occur.
+
+- No Scale
+- Exact Fit
+- Show All
+- No Border
+- Relative
+
+#### No Scale
+Scene remains the same size and aspect ratio (AR) as it was originally created.
+
+![no_scale](https://github.com/Skylonxe/kiscan/blob/main/Resources/no_scale.png)
+
+#### Exact Fit
+Scene is stretched, or non-uniform scaled, to fit the screen resolution, altering its AR; this causes movie clip distortion on either the X or Y; clipping will not occur.
+
+Relative Position is calculated from Native Resolution.
+
+![exact_fit](https://github.com/Skylonxe/kiscan/blob/main/Resources/exact_fit.png)
+
+#### Show All
+Entire scene is always visible, no matter what resolution you set in UDK; uniform scaling is performed to ensure this, keeping the original AR; clipping will not occur, but letter boxing will.
+
+Relative Position is calculated from letter boxed screen.
+
+![show_all](https://github.com/Skylonxe/kiscan/blob/main/Resources/show_all.png)
+
+#### No Border
+Scene is always displayed at the original AR, but it is scaled depending on the resolution; clipping will occur at game resolutions with different AR.
+
+![no_border](https://github.com/Skylonxe/kiscan/blob/main/Resources/no_border.png)
+
+#### Relative
+Absoulutly same as No Scale, however Relative Positions are calculated from current screen resolution.
+
+![no_scale](https://github.com/Skylonxe/kiscan/blob/main/Resources/no_scale.png)
+
+Remember that Draw Modes are inherited by child objects. So Draw Mode of subscenes does not have any effect! If you want to know more about math behind Draw Modes here are calculations:
+
+```javascript
+final static function IntPoint GetAdjustedPosition(KISGUIPosition Pos, EKISDrawMode DM, KISHandle Handle)
+{
+	local float ShowAllSizeY, NoBorderSizeX;
+	local IntPoint Result;
+ 
+	//Handle.ScreenRatio
+	//ScreenRatio.X = HUD.SizeX / Settings.NativeResolution.X;
+	//ScreenRatio.Y = HUD.SizeY / Settings.NativeResolution.Y;
+ 
+	if(Handle != none && Handle.Settings != none && Handle.HUD != none)
+	{
+		switch(DM)
+		{
+			case DM_NoScale:
+				Result.X = Pos.Dynamic.X + Pos.Relative.X * Handle.Settings.NativeResolution.X + Pos.Offset.X;
+				Result.Y = Pos.Dynamic.Y + Pos.Relative.Y * Handle.Settings.NativeResolution.Y + Pos.Offset.Y;
+				break;
+			case DM_ExactFit:
+				Result.X = Pos.Dynamic.X * Handle.ScreenRatio.X + Pos.Relative.X * Handle.HUD.SizeX + Pos.Offset.X;
+				Result.Y = Pos.Dynamic.Y * Handle.ScreenRatio.Y + Pos.Relative.Y * Handle.HUD.SizeY + Pos.Offset.Y;
+				break;
+			case DM_ShowAll:
+				ShowAllSizeY = Handle.HUD.SizeX * (float(Handle.Settings.NativeResolution.Y) / Handle.Settings.NativeResolution.X);
+ 
+				Result.X = Pos.Dynamic.X * Handle.ScreenRatio.X + Pos.Relative.X * Handle.HUD.SizeX + Pos.Offset.X;
+				Result.Y = Pos.Dynamic.Y * Handle.ScreenRatio.X + Pos.Relative.Y * ShowAllSizeY + Pos.Offset.Y;
+				break;
+			case DM_NoBorder:
+				NoBorderSizeX = Handle.HUD.SizeY * (float(Handle.Settings.NativeResolution.X) / Handle.Settings.NativeResolution.Y);
+ 
+				Result.X = Pos.Dynamic.X * Handle.ScreenRatio.Y + Pos.Relative.X * NoBorderSizeX + Pos.Offset.X;
+				Result.Y = Pos.Dynamic.Y * Handle.ScreenRatio.Y + Pos.Relative.Y * Handle.HUD.SizeY + Pos.Offset.Y;
+				break;
+			case DM_Relative:
+				Result.X = Pos.Dynamic.X + Pos.Relative.X * Handle.HUD.SizeX + Pos.Offset.X;
+				Result.Y = Pos.Dynamic.Y + Pos.Relative.Y * Handle.HUD.SizeY + Pos.Offset.Y;
+				break;
+			default:
+				break;
+		}
+	}
+ 
+	return Result;
+}
+ 
+final static function Vector2D GetAdjustedSize(KISVector2DUnsigned S, EKISDrawMode DM, KISHandle Handle)
+{
+	local Vector2D Result;
+ 
+	S.X = Abs(S.X);
+	S.Y = Abs(S.Y);
+ 
+	if(Handle != none)
+	{
+		switch(DM)
+		{
+			case DM_NoScale:
+				Result.X = S.X;
+				Result.Y = S.Y;
+				break;
+			case DM_ExactFit:
+				Result.X = S.X * Handle.ScreenRatio.X;
+				Result.Y = S.Y * Handle.ScreenRatio.Y;
+				break;
+			case DM_ShowAll:
+				Result.X = S.X * Handle.ScreenRatio.X;
+				Result.Y = S.Y * Handle.ScreenRatio.X;
+				break;
+			case DM_NoBorder:
+				Result.X = S.X * Handle.ScreenRatio.Y;
+				Result.Y = S.Y * Handle.ScreenRatio.Y;
+				break;
+			case DM_Relative:
+				Result.X = S.X;
+				Result.Y = S.Y;
+				break;
+			default:
+				break;
+		}
+	}
+ 
+	return Result;
+}
+```
+
+#### Priority
+With objects like scenes, components, canvas objects you will want to ensure that some object will be rendered under some other object and some other one will be on top. This is easily doable using Priority property. Priority is common integer and you can put there any number. Difference between two priorities does not matter, PriorityOfX=1, PriorityOfZ=2 is absolutly same as PriorityOfX=-500, PriorityOfZ=1000.
+
+When values are same, you can not assume order of rendering, so if you want to ensure order of rendering always specify desired priority.
+
+Example:
+
+Left Image - Scene which contains cursor - Priority=2
+
+Left Image - Scene which contains image - Priority=5
+
+Right Image - Scene which contains cursor - Priority=10
+
+Right Image - Scene which contains image - Priority=5
+
+![priority](https://github.com/Skylonxe/kiscan/blob/main/Resources/priority.png)
